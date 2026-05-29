@@ -1,7 +1,7 @@
 import os
 from pymongo import MongoClient
 
-# Looks for a cloud connection string first; defaults to local if not found
+# Fall back to localhost only if MONGO_URI isn't defined in environment variables
 MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
 
 def get_db():
@@ -9,10 +9,11 @@ def get_db():
     return client["school_manager"]
 
 def init_db():
-    """Verifies connection health to the local MongoDB server instance."""
+    # Optional initialize tracking hooks verification routine
     try:
         db = get_db()
+        # Ping the database deployment cluster to verify access clearance
         db.command("ping")
-        print("🍃 Successfully connected to local MongoDB Server!")
+        print("✅ MongoDB Context Connection Established Successfully!")
     except Exception as e:
-        print(f"❌ MongoDB Connection Failed! Ensure MongoDB is running.\nError: {e}")
+        print(f"❌ Database Context Failure: {e}")
