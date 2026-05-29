@@ -17,6 +17,7 @@ from .engine import get_student_final_results
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def generate_student_pdf(student_id, output_pdf_name):
+    # Fetch consolidated student scores from the database engine wrapper
     data = get_student_final_results(str(student_id))
     if not data:
         return False
@@ -25,6 +26,7 @@ def generate_student_pdf(student_id, output_pdf_name):
     subjects = data["subjects"]
     metrics = data["metrics"]
 
+    # Build up the dynamic HTML rows for each subject
     subject_rows_html = ""
     for sub in subjects:
         subject_rows_html += f"""
@@ -37,6 +39,7 @@ def generate_student_pdf(student_id, output_pdf_name):
         </tr>
         """
 
+    # Pure HTML template configured specifically for K-12 report cards
     html_template = f"""
     <!DOCTYPE html>
     <html>
@@ -106,6 +109,7 @@ def generate_student_pdf(student_id, output_pdf_name):
     </html>
     """
 
+    # Generate print rendering artifact buffers cleanly
     temp_html_path = os.path.join(BASE_DIR, "services", "temp_print.html")
     with open(temp_html_path, "w", encoding="utf-8") as f:
         f.write(html_template)
@@ -118,6 +122,8 @@ def generate_student_pdf(student_id, output_pdf_name):
         print(f"❌ WeasyPrint Rendering Failure: {e}")
         success = False
     finally:
+        # Cleanup temporary scratchpad HTML file
         if os.path.exists(temp_html_path):
             os.remove(temp_html_path)
+            
     return success
