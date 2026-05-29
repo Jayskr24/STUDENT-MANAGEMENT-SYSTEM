@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Marks - {{ student.name }}</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; padding: 40px; margin: 0; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h1 { color: #1a365d; margin: 0 0 5px 0; }
+        .subtitle { color: #718096; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 30px; }
+        .subject-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px 20px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .subject-info h4 { margin: 0; color: #2d3748; font-size: 11pt; }
+        .subject-info span { font-size: 9pt; color: #718096; }
+        .input-group { display: flex; align-items: center; gap: 10px; }
+        .input-group input { padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; width: 80px; text-align: center; font-size: 11pt; font-weight: 600; }
+        .max-lbl { font-size: 10pt; color: #4a5568; }
+        .actions-bar { margin-top: 30px; display: flex; gap: 15px; }
+        .btn-save { background-color: #2f855a; color: white; border: none; padding: 12px 24px; border-radius: 4px; font-weight: 600; cursor: pointer; }
+        .btn-save:hover { background-color: #22543d; }
+        .btn-cancel { background-color: #718096; color: white; text-decoration: none; padding: 12px 24px; border-radius: 4px; font-weight: 600; }
+        .btn-cancel:hover { background-color: #4a5568; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Manage Subject Marks</h1>
+    <div class="subtitle">Student: <strong>{{ student.name }}</strong> ({{ student.enrollment_no }})</div>
+
+    <form action="/student/{{ student.id }}/save_marks" method="POST">
+        {% for sub in subjects %}
+        <div class="subject-card">
+            <div class="subject-info">
+                <h4>{{ sub.title }}</h4>
+                <span>Subject Code: <strong>{{ sub.code }}</strong></span>
+            </div>
+            <div class="input-group">
+                <input type="number" 
+                       step="0.1" 
+                       min="0" 
+                       max="{{ sub.max_marks }}" 
+                       name="marks_{{ sub.id }}" 
+                       value="{{ sub.marks_obtained }}" 
+                       placeholder="0.0">
+                <span class="max-lbl">/ {{ sub.max_marks }}</span>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="actions-bar">
+            <button type="submit" class="btn-save">💾 Save All Marks</button>
+            <a href="/" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
