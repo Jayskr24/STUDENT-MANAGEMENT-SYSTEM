@@ -1,152 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>SAGE School Management Portal</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f4f8; padding: 30px; margin: 0; color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h1 { color: #2c5282; border-bottom: 3px solid #e2e8f0; padding-bottom: 12px; margin: 0; }
-        .subtitle { color: #718096; margin-bottom: 30px; font-size: 11pt; }
-        .management-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 35px; }
-        .card { background: #f7fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; }
-        .card h3 { margin-top: 0; color: #2b6cb0; border-bottom: 1px solid #edf2f7; padding-bottom: 8px; }
-        .form-group { display: flex; flex-direction: column; margin-bottom: 12px; }
-        .form-group label { font-size: 9pt; font-weight: 600; color: #4a5568; margin-bottom: 4px; }
-        .form-group input, .form-group select { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 10pt; }
-        .btn { background: #3182ce; color: white; border: none; padding: 9px 15px; border-radius: 4px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 9.5pt; text-align: center; }
-        .btn:hover { background: #2b6cb0; }
-        .btn-success { background: #38a169; }
-        .btn-success:hover { background: #2f855a; }
-        .btn-danger { background: #e53e3e; color: white; }
-        .btn-danger:hover { background: #c53030; }
-        .btn-warning { background: #dd6b20; }
-        .btn-warning:hover { background: #c05621; }
-        .inline-delete-form { display: inline; }
-        .class-list-mini { margin-top: 15px; font-size: 9.5pt; background: #fff; border: 1px solid #e2e8f0; border-radius: 4px; max-height: 120px; overflow-y: auto; padding: 5px; }
-        .class-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; border-bottom: 1px solid #edf2f7; }
-        .class-item:last-child { border-bottom: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { background: #2c5282; color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-        tr:hover { background: #f8fafc; }
-        .actions-cell { display: flex; gap: 6px; justify-content: center; align-items: center; }
-    </style>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<div class="container">
-    <h1>SAGE School Management Hub</h1>
-    <div class="subtitle">MongoDB Document Architecture — Dynamic School Setup Configuration.</div>
+{% block title %}Dashboard - SAGE Hub{% endblock %}
 
-    <div class="management-grid">
-        <div class="card">
-            <div>
-                <h3>🏫 1. Setup New Class</h3>
-                <form action="/add_class" method="POST">
-                    <div class="form-group">
-                        <label>Grade Level</label>
-                        <select name="class_name" required>
-                            <option value="Nursery">Nursery</option><option value="KG">KG</option>
-                            {% for n in range(1, 13) %} <option value="Class {{ n }}">Class {{ n }}</option> {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Section</label>
-                        <select name="section" required>
-                            <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn" style="width: 100%;">Create Class</button>
-                </form>
+{% block content %}
+<div class="main-card animate__animated animate__fadeIn">
+    <h2 class="text-primary fw-bold mb-1">Welcome to SAGE Management Portal</h2>
+    <p class="text-muted mb-4">Connected to Secure Cloud Cluster System.</p>
 
-                <div class="class-list-mini">
-                    {% for c in classes %}
-                    <div class="class-item">
-                        <span>{{ c.class_name }} - {{ c.section }}</span>
-                        <form action="/delete_class/{{ c._id }}" method="POST" onsubmit="return confirm('Delete this class?');" class="inline-delete-form">
-                            <button type="submit" style="background: none; border: none; color: #e53e3e; cursor: pointer; font-size: 8pt; font-weight: bold;">[Wipe]</button>
-                        </form>
-                    </div>
-                    {% endfor %}
-                </div>
+    <div class="row g-4 mt-2">
+        <div class="col-md-4">
+            <div class="card p-4 h-100 border-0 bg-light shadow-sm text-center">
+                <div class="fs-1 mb-2">🏫</div>
+                <h5 class="fw-bold text-dark">Class Configurations</h5>
+                <p class="text-muted small">Manage grades, sections, and add academic class containers.</p>
+                <a href="/manage_classes" class="btn btn-primary btn-sm mt-auto fw-bold">Open Class Setup</a>
             </div>
         </div>
-
-        <div class="card">
-            <div>
-                <h3>📚 2. Add Subject to Class</h3>
-                <form action="/add_subject" method="POST">
-                    <div class="form-group">
-                        <label>Select Target Class</label>
-                        <select name="class_id" required>
-                            {% for c in classes %}<option value="{{ c._id }}">{{ c.class_name }} (Sec {{ c.section }})</option>{% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Subject Title</label>
-                        <input type="text" name="title" placeholder="e.g. Mathematics" required>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <div class="form-group" style="flex: 1;"><label>Code</label><input type="text" name="code" placeholder="MATH-05" required></div>
-                        <div class="form-group" style="flex: 1;"><label>Max Marks</label><input type="number" name="max_marks" value="100" required></div>
-                    </div>
-                    <button type="submit" class="btn" style="width: 100%; margin-bottom: 10px;">Add Subject</button>
-                </form>
+        <div class="col-md-4">
+            <div class="card p-4 h-100 border-0 bg-light shadow-sm text-center">
+                <div class="fs-1 mb-2">🧑‍🎓</div>
+                <h5 class="fw-bold text-dark">Student Profiles</h5>
+                <p class="text-muted small">Register new student admissions, view, or wipe profiles.</p>
+                <a href="/manage_students" class="btn btn-success btn-sm mt-auto fw-bold">Open Directory</a>
             </div>
-            <form action="/clear_all_subjects" method="POST" onsubmit="return confirm('Wipe all subjects across all classes?');">
-                <button type="submit" class="btn btn-danger" style="width: 100%; font-size: 8.5pt;">⚠️ Delete All Existing Subjects</button>
-            </form>
         </div>
-
-        <div class="card">
-            <div>
-                <h3>👤 3. Register Student</h3>
-                <form action="/add_student" method="POST">
-                    <div class="form-group"><label>Full Name</label><input type="text" name="name" placeholder="Student Name" required></div>
-                    <div class="form-group"><label>Enrollment Number</label><input type="text" name="enrollment_no" placeholder="SCH/2026/001" required></div>
-                    <div class="form-group">
-                        <label>Assigned Class Group</label>
-                        <select name="class_id" required>
-                            {% for c in classes %}<option value="{{ c._id }}">{{ c.class_name }} (Sec {{ c.section }})</option>{% endfor %}
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-success" style="width: 100%; margin-bottom: 10px;">Register Student</button>
-                </form>
+        <div class="col-md-4">
+            <div class="card p-4 h-100 border-0 bg-light shadow-sm text-center">
+                <div class="fs-1 mb-2">📑</div>
+                <h5 class="fw-bold text-dark">Download Center</h5>
+                <p class="text-muted small">Instantly export digital marksheet and dynamic PDF documents.</p>
+                <a href="/download_center" class="btn btn-dark btn-sm mt-auto fw-bold">Open Downloads</a>
             </div>
-            <form action="/clear_all_marks" method="POST" onsubmit="return confirm('Wipe all student score marks sheets? This cannot be undone.');">
-                <button type="submit" class="btn btn-warning" style="width: 100%; font-size: 8.5pt;">📊 Delete All Student Marksheets</button>
-            </form>
         </div>
     </div>
-
-    <h2>Student Directory </h2>
-    <table>
-        <thead>
-            <tr><th>Enrollment ID</th><th>Student Name</th><th>Assigned Class Group</th><th style="text-align: center; width: 320px;">Actions</th></tr>
-        </thead>
-        <tbody>
-            {% for student in students %}
-            <tr>
-                <td><strong>{{ student.enrollment_no }}</strong></td>
-                <td>{{ student.name }}</td>
-                <td>{{ student.class_display }}</td>
-                <td>
-                    <div class="actions-cell">
-                        <a href="/student/{{ student.id }}/marks" class="btn" style="background:#e2e8f0; color:#2d3748;">📝 Edit Marks</a>
-                        <a href="/download/{{ student.id }}" class="btn btn-success">⬇ PDF</a>
-                        <form action="/delete_student/{{ student.id }}" method="POST" onsubmit="return confirm('Are you sure you want to completely remove student {{ student.name }}? This cleans up their marks documents.');" class="inline-delete-form">
-                            <button type="submit" class="btn btn-danger">❌ Delete</button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            {% else %}
-            <tr><td colspan="4" style="text-align: center; color: #a0aec0; padding: 20px;">No students registered inside this system directory layout.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
-
-</body>
-</html>
+{% endblock %}

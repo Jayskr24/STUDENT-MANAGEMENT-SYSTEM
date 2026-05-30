@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Download Center - SAGE{% endblock %}
+
+{% block content %}
+<div class="main-card">
+    <h3 class="text-dark fw-bold mb-1">📑 Centralized Download Hub</h3>
+    <p class="text-muted mb-4">Export official dynamic student marksheet PDF reports securely.</p>
+
+    <div class="table-responsive bg-white rounded border">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-secondary text-dark">
+                <tr>
+                    <th class="ps-3">Enrollment ID</th>
+                    <th>Student Name</th>
+                    <th>Class Group</th>
+                    <th style="text-align: center; width: 200px;" class="pe-3">Report Export</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td class="ps-3"><strong>{{ student.enrollment_no }}</strong></td>
+                    <td>{{ student.name }}</td>
+                    <td><span class="badge bg-blue text-primary bg-opacity-10 px-2 py-1">{{ student.class_id }}</span></td>
+                    <td style="text-align: center;" class="pe-3">
+                        <a href="/download/{{ student.id }}" 
+                           class="btn btn-success btn-sm w-100 fw-bold download-btn"
+                           onclick="this.innerText='⏳ Generating...'; this.classList.add('disabled');">
+                           ⬇️ Download PDF Report
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center text-muted py-4">No student records found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Agar page refresh hota hai ya back aate hain, toh buttons normal ho jayenge
+    document.addEventListener('DOMContentLoaded', () => {
+        const buttons = document.querySelectorAll('.download-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('disabled');
+            btn.innerText = '⬇️ Download PDF Report';
+        });
+    });
+</script>
+{% endblock %}

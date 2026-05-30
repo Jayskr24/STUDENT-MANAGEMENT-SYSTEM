@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .header { text-align: center; border-bottom: 2px solid #004a99; margin-bottom: 20px; }
+        .table { border: 1px solid #dee2e6; }
+        .table thead { background-color: #004a99; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>ACADEMIC REPORT</h2>
+    </div>
+    <p><b>Student:</b> {{ name }} | <b>Enrollment:</b> {{ enrollment }}</p>
+    <table class="table">
+        <thead>
+            <tr><th>Subject</th><th>Max Marks</th><th>Obtained</th></tr>
+        </thead>
+        <tbody>
+            {% for subject in subjects %}
+            <tr>
+                <td>{{ subject.name }}</td>
+                <td>{{ subject.max }}</td>
+                <td>{{ subject.obtained }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

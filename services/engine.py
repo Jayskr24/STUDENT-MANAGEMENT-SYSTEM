@@ -1,4 +1,4 @@
-from bson.objectid import ObjectId
+from bson import ObjectId
 from core.database import get_db
 
 def calculate_letter_grade(percentage):
@@ -13,62 +13,43 @@ def calculate_letter_grade(percentage):
 
 def get_student_final_results(student_id):
     db = get_db()
-    try:
-        s_obj_id = ObjectId(student_id)
-    except Exception:
-        return None
-        
-    student = db.students.find_one({"_id": s_obj_id})
-    if not student:
-        return None
-        
-    class_doc = db.classes.find_one({"_id": ObjectId(student["class_id"])})
-    if not class_doc:
-        return None
+    # Student fetch
+    student = db.students.find_one({"_id": ObjectId(student_id)})
+    if not student: return None
 
-    marks_cursor = db.marks.find({"student_id": str(student_id)})
-    marks_map = {m["subject_id"]: m["marks_obtained"] for m in marks_cursor}
-
+    marks_list = student.get("marks_list", [])
+    
     subject_list = []
     total_max = 0
-    total_obtained = 0
-
-    for sub in class_doc.get("subjects", []):
-        sub_id = sub["id"]
-        obtained = marks_map.get(sub_id, None)
+    total_obt = 0
+    
+    # Directly marks_list se loop karein, kyuki database mein data yahi hai
+    for m in marks_list:
+        title = m.get("subject", "Unknown")
+        obt = float(m.get("marks", 0))
+        max_m = 100 # Default max marks
         
-        if obtained is not None:
-            pct = (obtained / sub["max_marks"]) * 100
-            grade = calculate_letter_grade(pct)
-            total_obtained += obtained
-        else:
-            grade = "N/A"
-            
-        total_max += sub["max_marks"]
+        total_max += max_m
+        total_obt += obt
         
         subject_list.append({
-            "course_code": sub["code"],
-            "subject_title": sub["title"],
-            "max_marks": sub["max_marks"],
-            "marks_obtained": obtained if obtained is not None else "-",
-            "letter_grade": grade
+            "code": "N/A",
+            "title": title,
+            "max": max_m,
+            "obt": obt,
+            "grade": calculate_letter_grade((obt/max_m)*100)
         })
 
-    percentage = (total_obtained / total_max) * 100 if total_max > 0 and total_obtained > 0 else 0
+    perc = (total_obt / total_max * 100) if total_max > 0 else 0
     
     return {
         "profile": {
-            "student_name": student["name"],
-            "enrollment_no": student["enrollment_no"],
-            "class_name": class_doc["class_name"],
-            "section": class_doc["section"]
+            "name": student.get("name", "N/A"),
+            "enrollment": student.get("enrollment_no", "N/A")
         },
         "subjects": subject_list,
         "metrics": {
-            "total_max": total_max,
-            "total_obtained": total_obtained,
-            "percentage": round(percentage, 2),
-            "overall_grade": calculate_letter_grade(percentage) if total_obtained > 0 else "N/A",
-            "status": "PASSED" if percentage >= 33 else "DETAINED"
+            "percentage": round(perc, 2),
+            "status": "PASSED" if perc >= 33 else "FAIL"
         }
     }

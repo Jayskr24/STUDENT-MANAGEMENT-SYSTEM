@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Marks Management - {{ student.name }}{% endblock %}
+
+{% block content %}
+<div class="main-card shadow-sm border">
+    <h3 class="fw-bold text-primary mb-3">📝 Marks Management</h3>
+    <div class="alert alert-secondary">
+        Student: <strong>{{ student.name }}</strong> | ID: <strong>{{ student.enrollment_no }}</strong>
+    </div>
+    
+    <form action="/add_marks/{{ student.enrollment_no }}" method="POST" class="p-3 bg-light border rounded mb-4">
+        <div class="row g-2">
+            <div class="col-md-5"><input type="text" name="subject" class="form-control" placeholder="Subject Name" required></div>
+            <div class="col-md-4"><input type="number" name="marks" class="form-control" placeholder="Marks" required></div>
+            <div class="col-md-3"><button type="submit" class="btn btn-success w-100 fw-bold">Add Marks</button></div>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle border">
+            <thead class="table-dark">
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                    <th style="width: 200px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in student.marks_list %}
+                <tr>
+                    <form action="/update_marks/{{ student.enrollment_no }}" method="POST">
+                        <td>
+                            <input type="hidden" name="subject" value="{{ entry.subject }}">
+                            <span class="fw-bold">{{ entry.subject }}</span>
+                        </td>
+                        <td>
+                            <input type="number" name="new_marks" value="{{ entry.marks }}" class="form-control form-control-sm" style="max-width: 100px;">
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button type="submit" class="btn btn-primary fw-bold">Update</button>
+                                <button type="submit" formaction="/delete_marks/{{ student.enrollment_no }}" 
+                                        class="btn btn-danger fw-bold">Delete</button>
+                            </div>
+                        </td>
+                    </form>
+                </tr>
+                {% else %}
+                <tr><td colspan="3" class="text-center text-muted">No marks added yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="/manage_students" class="btn btn-outline-dark mt-3">← Back to Directory</a>
+</div>
+{% endblock %}

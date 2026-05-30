@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Management - SAGE{% endblock %}
+
+{% block content %}
+<div class="main-card">
+    <h3 class="text-dark fw-bold mb-4">🧑‍🎓 Student Directory Layout</h3>
+    
+    <div class="p-4 bg-light rounded border mb-4 shadow-sm">
+        <h5 class="fw-bold text-success mb-3">Add New Student Profile</h5>
+        <form action="/manage_students" method="POST" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Enrollment No</label>
+                <input type="text" name="enrollment_no" class="form-control" placeholder="e.g., SAGE-2026-01" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Student Full Name</label>
+                <input type="text" name="name" class="form-control" placeholder="Enter student name" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Assign Class Group</label>
+                <select name="class_id" class="form-select" required>
+                    <option value="" disabled selected>Select class...</option>
+                    {% for cls in classes %}
+                    <option value="{{ cls.class_id }}">{{ cls.class_id }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success w-100 fw-bold">Register Student</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive bg-white rounded border">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th class="ps-3">Enrollment ID</th>
+                    <th>Student Name</th>
+                    <th>Assigned Class Group</th>
+                    <th style="text-align: center; width: 250px;" class="pe-3">Action Container</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td class="ps-3"><strong>{{ student.enrollment_no }}</strong></td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.class_id }}</td>
+                    <td style="text-align: center;" class="pe-3">
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a href="{{ url_for('student_marks', enrollment_no=student.enrollment_no) }}" 
+                               class="btn btn-sm btn-outline-secondary fw-bold">📝 Marks</a>
+                            
+                            <button class="btn btn-danger btn-sm fw-bold" 
+                                    onclick="wipeStudent('{{ student.enrollment_no }}', this)">
+                                ❌ Wipe Out
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center text-muted py-4">No students registered.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function wipeStudent(enrollmentNo, buttonElement) {
+    Swal.fire({
+        title: 'Delete Student?',
+        text: "Yeh record permanently hat jayega!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e53e3e',
+        confirmButtonText: 'Yes, wipe it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/delete_student/${encodeURIComponent(enrollmentNo)}`, { method: 'POST' })
+            .then(res => {
+                if (res.ok) {
+                    buttonElement.closest('tr').remove();
+                    Swal.fire('Deleted!', 'Student record removed.', 'success');
+                } else {
+                    Swal.fire('Error!', 'Operation failed.', 'error');
+                }
+            });
+        }
+    });
+}
+</script>
+{% endblock %}
