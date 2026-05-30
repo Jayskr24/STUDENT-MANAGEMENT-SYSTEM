@@ -13,7 +13,7 @@ def calculate_letter_grade(percentage):
 
 def get_student_final_results(student_id):
     db = get_db()
-    # Student fetch
+    # MongoDB se data fetch karein
     student = db.students.find_one({"_id": ObjectId(student_id)})
     if not student: return None
 
@@ -23,11 +23,12 @@ def get_student_final_results(student_id):
     total_max = 0
     total_obt = 0
     
-    # Directly marks_list se loop karein, kyuki database mein data yahi hai
+    # Marks list ko iterate karein
     for m in marks_list:
         title = m.get("subject", "Unknown")
+        # Ensure marks are treated as numbers
         obt = float(m.get("marks", 0))
-        max_m = 100 # Default max marks
+        max_m = 100 
         
         total_max += max_m
         total_obt += obt
@@ -40,6 +41,7 @@ def get_student_final_results(student_id):
             "grade": calculate_letter_grade((obt/max_m)*100)
         })
 
+    # Percentage calculate karein
     perc = (total_obt / total_max * 100) if total_max > 0 else 0
     
     return {
