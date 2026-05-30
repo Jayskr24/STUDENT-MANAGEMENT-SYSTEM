@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - SAGE Hub{% endblock %}
+
+{% block content %}
+<div class="main-card animate__animated animate__fadeIn">
+    <h2 class="text-primary fw-bold mb-1">Welcome to SAGE Management Portal</h2>
+    <p class="text-muted mb-4">Connected to Secure Cloud Cluster System.</p>
+
+    <div class="row g-4 mt-2">
+        <div class="col-md-4">
+            <div class="card p-4 h-100 border-0 bg-light shadow-sm text-center">
+                <div class="fs-1 mb-2">🏫</div>
+                <h5 class="fw-bold text-dark">Class Configurations</h5>
+                <p class="text-muted small">Manage grades, sections, and add academic class containers.</p>
+                <a href="/manage_classes" class="btn btn-primary btn-sm mt-auto fw-bold">Open Class Setup</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 h-100 border-0 bg-light shadow-sm text-center">
+                <div class="fs-1 mb-2">🧑‍🎓</div>
+                <h5 class="fw-bold text-dark">Student Profiles</h5>
+                <p class="text-muted small">Register new student admissions, view, or wipe profiles.</p>
+                <a href="/manage_students" class="btn btn-success btn-sm mt-auto fw-bold">Open Directory</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 h-100 border-0 bg-light shadow-sm text-center">
+                <div class="fs-1 mb-2">📑</div>
+                <h5 class="fw-bold text-dark">Download Center</h5>
+                <p class="text-muted small">Instantly export digital marksheet and dynamic PDF documents.</p>
+                <a href="/download_center" class="btn btn-dark btn-sm mt-auto fw-bold">Open Downloads</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

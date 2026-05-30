@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Class Management - SAGE{% endblock %}
+
+{% block content %}
+<div class="main-card">
+    <h3 class="text-dark fw-bold mb-4">🏫 Setup Class & Sections</h3>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="p-4 bg-light rounded shadow-sm border">
+                <h5 class="fw-bold text-primary mb-3">Create New Class</h5>
+                <form action="/manage_classes" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Grade Level</label>
+                        <input type="text" name="grade" class="form-control" placeholder="e.g., Class 10" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Section Identifier</label>
+                        <input type="text" name="section" class="form-control" placeholder="e.g., A, B" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Create Class Container</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="table-responsive rounded border bg-white">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-primary text-primary">
+                        <tr>
+                            <th class="ps-3">Class ID</th>
+                            <th>Grade</th>
+                            <th>Section</th>
+                            <th style="text-align: center; width: 220px;" class="pe-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cls in classes %}
+                        <tr>
+                            <td class="ps-3"><strong>{{ cls.class_id }}</strong></td>
+                            <td>{{ cls.grade }}</td>
+                            <td>{{ cls.section }}</td>
+                            <td style="text-align: center;" class="pe-3">
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <button class="btn btn-sm btn-outline-secondary fw-bold" 
+                                            onclick="openEditModal('{{ cls.class_id }}', '{{ cls.grade }}', '{{ cls.section }}')">
+                                        📝 Update
+                                    </button>
+                                    <button class="btn btn-danger btn-sm fw-bold" 
+                                            onclick="wipeClass('{{ cls.class_id }}', this)">
+                                        ❌ Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="text-center text-muted py-4">No classes configured yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editClassModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="modalTitle">Update Class Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editClassForm" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Grade Level</label>
+                        <input type="text" name="edit_grade" id="edit_grade" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Section Identifier</label>
+                        <input type="text" name="edit_section" id="edit_section" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success fw-bold">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- UPDATE FUNCTIONALITY ---
+function openEditModal(classId, grade, section) {
+    // encodeURIComponent zaruri hai taaki 'Class 4-A' jaisi ID error na de
+    const encodedId = encodeURIComponent(classId);
+    document.getElementById('editClassForm').action = `/update_class/${encodedId}`;
+    
+    document.getElementById('modalTitle').innerText = `Update Class ${classId}`;
+    document.getElementById('edit_grade').value = grade;
+    document.getElementById('edit_section').value = section;
+    
+    var myModal = new bootstrap.Modal(document.getElementById('editClassModal'));
+    myModal.show();
+}
+
+// --- DELETE FUNCTIONALITY ---
+function wipeClass(classId, buttonElement) {
+    Swal.fire({
+        title: `Wipe out Class ${classId}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e53e3e',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const url = `/delete_class/${encodeURIComponent(classId)}`;
+            
+            fetch(url, { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    buttonElement.closest('tr').remove();
+                    Swal.fire('Deleted!', 'Class wiped successfully.', 'success');
+                } else {
+                    Swal.fire('Error!', 'Could not delete. Check route.', 'error');
+                }
+            });
+        }
+    });
+}
+</script>
+{% endblock %}

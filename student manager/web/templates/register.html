@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - SAGE Hub</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="height: 100vh;">
+    <div class="card p-4 shadow-sm" style="width: 400px; border-radius: 12px;">
+        <h3 class="text-center mb-1 fw-bold text-success">Create Account</h3>
+        <p class="text-center text-muted small mb-4">Get your own private database workspace</p>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="alert alert-{{ category }} p-2 text-center small">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/register">
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Choose Username</label>
+                <input type="text" name="username" class="form-control" placeholder="e.g. jayprakash" required>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Create strong password" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100 py-2 fw-bold">Register Workspace</button>
+        </form>
+        
+        <p class="text-center mt-3 small mb-0">Already have an account? <a href="/login" class="text-decoration-none fw-bold">Login here</a></p>
+    </div>
+</body>
+</html>
